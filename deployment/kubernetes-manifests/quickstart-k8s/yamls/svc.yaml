@@ -478,11 +478,10 @@ kind: Service
 metadata:
   name: ts-ui-dashboard
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: http
       port: 8080
-      nodePort: 32677
   selector:
     app: ts-ui-dashboard
 
@@ -497,12 +496,11 @@ metadata:
     app.kubernetes.io/name: jaeger
     app.kubernetes.io/component: query
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: query-http
       port: 16686
       protocol: TCP
-      nodePort: 32688
   selector:
     app.kubernetes.io/name: jaeger
     app.kubernetes.io/component: all-in-one
