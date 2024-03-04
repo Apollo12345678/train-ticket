@@ -25,7 +25,7 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public Response create(Station station, HttpHeaders headers) {
-        if (repository.findById(station.getId()) == null) {
+        if (!repository.findById(station.getId()).isPresent()) {
             station.setStayTime(station.getStayTime());
             repository.save(station);
             return new Response<>(1, "Create success", station);
@@ -47,7 +47,7 @@ public class StationServiceImpl implements StationService {
     @Override
     public Response update(Station info, HttpHeaders headers) {
 
-        if (repository.findById(info.getId()) == null) {
+        if (!repository.findById(info.getId()).isPresent()) {
             StationServiceImpl.LOGGER.error("Update station error.Station not found, StationId: {}",info.getId());
             return new Response<>(0, "Station not exist", null);
         } else {
@@ -61,7 +61,7 @@ public class StationServiceImpl implements StationService {
     @Override
     public Response delete(Station info, HttpHeaders headers) {
 
-        if (repository.findById(info.getId()) != null) {
+        if (repository.findById(info.getId()).isPresent()) {
             Station station = new Station(info.getId(), info.getName());
             repository.delete(station);
             return new Response<>(1, "Delete success", station);
@@ -117,7 +117,7 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public Response queryById(String stationId, HttpHeaders headers) {
-        Station station = repository.findById(stationId);
+        Station station = repository.findById(stationId).orElse(null);
         if (station != null) {
             return new Response<>(1, success, station.getName());
         } else {
@@ -130,7 +130,7 @@ public class StationServiceImpl implements StationService {
     public Response queryByIdBatch(List<String> idList, HttpHeaders headers) {
         ArrayList<String> result = new ArrayList<>();
         for (int i = 0; i < idList.size(); i++) {
-            Station station = repository.findById(idList.get(i));
+            Station station = repository.findById(idList.get(i)).orElse(null);
             if (station != null) {
                 result.add(station.getName());
             }

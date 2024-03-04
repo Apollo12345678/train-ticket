@@ -66,7 +66,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     public void initPayment(Payment payment, HttpHeaders headers){
-        Payment paymentTemp = paymentRepository.findById(payment.getId());
+        Payment paymentTemp = paymentRepository.findById(payment.getId()).orElse(null);
         if(paymentTemp == null){
             PaymentServiceImpl.LOGGER.error("Init payment error.Payment not found, PaymentId: {}",payment.getId());
             paymentRepository.save(payment);
