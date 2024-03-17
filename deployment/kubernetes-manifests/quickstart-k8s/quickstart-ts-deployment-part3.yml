@@ -32,11 +32,10 @@ kind: Service
 metadata:
   name: ts-ui-dashboard
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: http
       port: 8080
-      nodePort: 32677
   selector:
     app: ts-ui-dashboard
 ---
