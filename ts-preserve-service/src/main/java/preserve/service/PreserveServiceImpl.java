@@ -303,10 +303,10 @@ public class PreserveServiceImpl implements PreserveService {
     }
 
     private String queryForStationId(String stationName, HttpHeaders httpHeaders) {
-        PreserveServiceImpl.LOGGER.info("[Preserve Other Service][Get Station Name]");
+        PreserveServiceImpl.LOGGER.info("[Preserve Other Service][Get Station Name]["+stationName+"]");
 
 
-        HttpEntity requestQueryForStationId = new HttpEntity(httpHeaders);
+        HttpEntity requestQueryForStationId = new HttpEntity(null);
         ResponseEntity<Response<String>> reQueryForStationId = restTemplate.exchange(
                 "http://ts-station-service:12345/api/v1/stationservice/stations/id/" + stationName,
                 HttpMethod.GET,

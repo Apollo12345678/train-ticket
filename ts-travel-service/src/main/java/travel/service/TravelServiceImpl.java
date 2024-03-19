@@ -389,17 +389,23 @@ public class TravelServiceImpl implements TravelService {
         Calendar calDateB = Calendar.getInstance();
         calDateB.setTime(date);
 
+        TravelServiceImpl.LOGGER.info("Comparing dates, now: {}, departTime: {}", calDateA.toString(), calDateB.toString());
+
         if (calDateA.get(Calendar.YEAR) > calDateB.get(Calendar.YEAR)) {
+            TravelServiceImpl.LOGGER.info("Return false, due to year constraint");
             return false;
         } else if (calDateA.get(Calendar.YEAR) == calDateB.get(Calendar.YEAR)) {
             if (calDateA.get(Calendar.MONTH) > calDateB.get(Calendar.MONTH)) {
+                TravelServiceImpl.LOGGER.info("Return false due to month constraint");
                 return false;
             } else if (calDateA.get(Calendar.MONTH) == calDateB.get(Calendar.MONTH)) {
                 return calDateA.get(Calendar.DAY_OF_MONTH) <= calDateB.get(Calendar.DAY_OF_MONTH);
             } else {
+                TravelServiceImpl.LOGGER.info("Return true");
                 return true;
             }
         } else {
+            TravelServiceImpl.LOGGER.info("Return true");
             return true;
         }
     }
@@ -417,6 +423,7 @@ public class TravelServiceImpl implements TravelService {
     }
 
     private String queryForStationId(String stationName, HttpHeaders headers) {
+        TravelServiceImpl.LOGGER.info("[Preserve Other Service][Get Station Name]["+stationName+"]");
         HttpEntity requestEntity = new HttpEntity(null);
         ResponseEntity<Response<String>> re = restTemplate.exchange(
                 "http://ts-ticketinfo-service:15681/api/v1/ticketinfoservice/ticketinfo/" + stationName,
