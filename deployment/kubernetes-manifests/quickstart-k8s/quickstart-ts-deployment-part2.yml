@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-admin-basic-info-service
+  labels:
+    service: ts-admin-basic-info-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -11,6 +14,8 @@ spec:
     metadata:
       labels:
         app: ts-admin-basic-info-service
+        service: ts-admin-basic-info-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-admin-basic-info-service
@@ -43,6 +48,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-admin-order-service
+  labels:
+    service: ts-admin-order-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -52,6 +60,8 @@ spec:
     metadata:
       labels:
         app: ts-admin-order-service
+        service: ts-admin-order-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-admin-order-service
@@ -83,6 +93,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-admin-route-service
+  labels:
+    service: ts-admin-route-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -92,6 +105,8 @@ spec:
     metadata:
       labels:
         app: ts-admin-route-service
+        service: ts-admin-route-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-admin-route-service
@@ -123,6 +138,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-admin-travel-service
+  labels:
+    service: ts-admin-travel-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -132,6 +150,8 @@ spec:
     metadata:
       labels:
         app: ts-admin-travel-service
+        service: ts-admin-travel-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-admin-travel-service
@@ -163,6 +183,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-admin-user-service
+  labels:
+    service: ts-admin-user-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -172,6 +195,8 @@ spec:
     metadata:
       labels:
         app: ts-admin-user-service
+        service: ts-admin-user-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-admin-user-service
@@ -203,6 +228,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-assurance-service
+  labels:
+    service: ts-assurance-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -212,6 +240,8 @@ spec:
     metadata:
       labels:
         app: ts-assurance-service
+        service: ts-assurance-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-assurance-service
@@ -243,6 +273,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-basic-service
+  labels:
+    service: ts-basic-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -252,6 +285,8 @@ spec:
     metadata:
       labels:
         app: ts-basic-service
+        service: ts-basic-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-basic-service
@@ -283,6 +318,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-cancel-service
+  labels:
+    service: ts-cancel-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -292,6 +330,8 @@ spec:
     metadata:
       labels:
         app: ts-cancel-service
+        service: ts-cancel-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-cancel-service
@@ -323,6 +363,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-config-service
+  labels:
+    service: ts-config-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -332,6 +375,8 @@ spec:
     metadata:
       labels:
         app: ts-config-service
+        service: ts-config-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-config-service
@@ -363,6 +408,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-consign-price-service
+  labels:
+    service: ts-consign-price-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -372,6 +420,8 @@ spec:
     metadata:
       labels:
         app: ts-consign-price-service
+        service: ts-consign-price-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-consign-price-service
@@ -403,6 +453,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-consign-service
+  labels:
+    service: ts-consign-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -412,6 +465,8 @@ spec:
     metadata:
       labels:
         app: ts-consign-service
+        service: ts-consign-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-consign-service
@@ -443,6 +498,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-contacts-service
+  labels:
+    service: ts-contacts-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -452,6 +510,8 @@ spec:
     metadata:
       labels:
         app: ts-contacts-service
+        service: ts-contacts-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-contacts-service
@@ -483,6 +543,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-execute-service
+  labels:
+    service: ts-execute-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -492,6 +555,8 @@ spec:
     metadata:
       labels:
         app: ts-execute-service
+        service: ts-execute-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-execute-service
@@ -523,6 +588,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-food-map-service
+  labels:
+    service: ts-food-map-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -532,6 +600,8 @@ spec:
     metadata:
       labels:
         app: ts-food-map-service
+        service: ts-food-map-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-food-map-service
@@ -563,6 +633,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-food-service
+  labels:
+    service: ts-food-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -572,6 +645,8 @@ spec:
     metadata:
       labels:
         app: ts-food-service
+        service: ts-food-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-food-service
@@ -607,6 +682,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-inside-payment-service
+  labels:
+    service: ts-inside-payment-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -616,6 +694,8 @@ spec:
     metadata:
       labels:
         app: ts-inside-payment-service
+        service: ts-inside-payment-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-inside-payment-service
@@ -647,6 +727,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-auth-service
+  labels:
+    service: ts-auth-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -656,6 +739,8 @@ spec:
     metadata:
       labels:
         app: ts-auth-service
+        service: ts-auth-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-auth-service
@@ -687,6 +772,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-news-service
+  labels:
+    service: ts-news-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -696,6 +784,8 @@ spec:
     metadata:
       labels:
         app: ts-news-service
+        service: ts-news-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-news-service
@@ -727,6 +817,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-notification-service
+  labels:
+    service: ts-notification-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -736,6 +829,8 @@ spec:
     metadata:
       labels:
         app: ts-notification-service
+        service: ts-notification-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-notification-service
@@ -775,6 +870,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-order-other-service
+  labels:
+    service: ts-order-other-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -784,6 +882,8 @@ spec:
     metadata:
       labels:
         app: ts-order-other-service
+        service: ts-order-other-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-order-other-service
@@ -815,6 +915,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-order-service
+  labels:
+    service: ts-order-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -824,6 +927,8 @@ spec:
     metadata:
       labels:
         app: ts-order-service
+        service: ts-order-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-order-service
@@ -855,6 +960,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-payment-service
+  labels:
+    service: ts-payment-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -864,6 +972,8 @@ spec:
     metadata:
       labels:
         app: ts-payment-service
+        service: ts-payment-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-payment-service
@@ -895,6 +1005,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-preserve-other-service
+  labels:
+    service: ts-preserve-other-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -904,6 +1017,8 @@ spec:
     metadata:
       labels:
         app: ts-preserve-other-service
+        service: ts-preserve-other-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-preserve-other-service
@@ -939,6 +1054,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-preserve-service
+  labels:
+    service: ts-preserve-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -948,6 +1066,8 @@ spec:
     metadata:
       labels:
         app: ts-preserve-service
+        service: ts-preserve-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-preserve-service
@@ -983,6 +1103,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-price-service
+  labels:
+    service: ts-price-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -992,6 +1115,8 @@ spec:
     metadata:
       labels:
         app: ts-price-service
+        service: ts-price-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-price-service
@@ -1023,6 +1148,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-rebook-service
+  labels:
+    service: ts-rebook-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1032,6 +1160,8 @@ spec:
     metadata:
       labels:
         app: ts-rebook-service
+        service: ts-rebook-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-rebook-service
@@ -1063,6 +1193,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-route-plan-service
+  labels:
+    service: ts-route-plan-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1072,6 +1205,8 @@ spec:
     metadata:
       labels:
         app: ts-route-plan-service
+        service: ts-route-plan-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-route-plan-service
@@ -1103,6 +1238,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-route-service
+  labels:
+    service: ts-route-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1112,6 +1250,8 @@ spec:
     metadata:
       labels:
         app: ts-route-service
+        service: ts-route-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-route-service
@@ -1143,6 +1283,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-seat-service
+  labels:
+    service: ts-seat-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1152,6 +1295,8 @@ spec:
     metadata:
       labels:
         app: ts-seat-service
+        service: ts-seat-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-seat-service
@@ -1183,6 +1328,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-security-service
+  labels:
+    service: ts-security-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1192,6 +1340,8 @@ spec:
     metadata:
       labels:
         app: ts-security-service
+        service: ts-security-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-security-service
@@ -1223,6 +1373,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-user-service
+  labels:
+    service: ts-user-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1232,6 +1385,8 @@ spec:
     metadata:
       labels:
         app: ts-user-service
+        service: ts-user-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-user-service
@@ -1263,6 +1418,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-station-service
+  labels:
+    service: ts-station-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1272,6 +1430,8 @@ spec:
     metadata:
       labels:
         app: ts-station-service
+        service: ts-station-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-station-service
@@ -1303,6 +1463,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-ticket-office-service
+  labels:
+    service: ts-ticket-office-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1312,6 +1475,8 @@ spec:
     metadata:
       labels:
         app: ts-ticket-office-service
+        service: ts-ticket-office-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-ticket-office-service
@@ -1343,6 +1508,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-ticketinfo-service
+  labels:
+    service: ts-ticketinfo-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1352,6 +1520,8 @@ spec:
     metadata:
       labels:
         app: ts-ticketinfo-service
+        service: ts-ticketinfo-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-ticketinfo-service
@@ -1383,6 +1553,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-train-service
+  labels:
+    service: ts-train-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1392,6 +1565,8 @@ spec:
     metadata:
       labels:
         app: ts-train-service
+        service: ts-train-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-train-service
@@ -1423,6 +1598,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-travel2-service
+  labels:
+    service: ts-travel2-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1432,6 +1610,8 @@ spec:
     metadata:
       labels:
         app: ts-travel2-service
+        service: ts-travel2-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-travel2-service
@@ -1463,6 +1643,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-travel-plan-service
+  labels:
+    service: ts-travel-plan-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1472,6 +1655,8 @@ spec:
     metadata:
       labels:
         app: ts-travel-plan-service
+        service: ts-travel-plan-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-travel-plan-service
@@ -1503,6 +1688,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-travel-service
+  labels:
+    service: ts-travel-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1512,6 +1700,8 @@ spec:
     metadata:
       labels:
         app: ts-travel-service
+        service: ts-travel-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-travel-service
@@ -1543,6 +1733,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-delivery-service
+  labels:
+    service: ts-delivery-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1552,6 +1745,8 @@ spec:
     metadata:
       labels:
         app: ts-delivery-service
+        service: ts-delivery-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-delivery-service
@@ -1588,6 +1783,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-verification-code-service
+  labels:
+    service: ts-verification-code-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1597,6 +1795,8 @@ spec:
     metadata:
       labels:
         app: ts-verification-code-service
+        service: ts-verification-code-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-verification-code-service
@@ -1628,6 +1828,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ts-voucher-service
+  labels:
+    service: ts-voucher-service
+    application: train-ticket
 spec:
   selector:
     matchLabels:
@@ -1637,6 +1840,8 @@ spec:
     metadata:
       labels:
         app: ts-voucher-service
+        service: ts-voucher-service
+        application: train-ticket
     spec:
       containers:
         - name: ts-voucher-service
