@@ -24,12 +24,15 @@ public class ConsignPriceServiceImpl implements ConsignPriceService {
 
     @Override
     public Response getPriceByWeightAndRegion(double weight, boolean isWithinRegion, HttpHeaders headers) {
+        ConsignPriceServiceImpl.LOGGER.info("[Get Price By Weight And Region]");
         ConsignPrice priceConfig = repository.findByIndex(0);
         double price = 0;
         double initialPrice = priceConfig.getInitialPrice();
         if (weight <= priceConfig.getInitialWeight()) {
             price = initialPrice;
+            ConsignPriceServiceImpl.LOGGER.info("[weight <= priceConfig.getInitialWeight]");
         } else {
+            ConsignPriceServiceImpl.LOGGER.info("[weight > priceConfig.getInitialWeight], priceconfig: {}", priceConfig.toString());
             double extraWeight = weight - priceConfig.getInitialWeight();
             if (isWithinRegion) {
                 price = initialPrice + extraWeight * priceConfig.getWithinPrice();
