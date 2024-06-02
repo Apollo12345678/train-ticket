@@ -1,0 +1,795 @@
+kind: Workflow
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: network
+  namespace: litmus
+  creationTimestamp: null
+  labels:
+    infra_id: de518bc8-2294-45dc-b8ec-42b5c9e8c397
+    revision_id: 43fb6330-54a3-474e-b60e-68a9a4189b05
+    workflow_id: 68d32bf4-d985-4c98-9b86-517b1a074bf2
+    workflows.argoproj.io/controller-instanceid: de518bc8-2294-45dc-b8ec-42b5c9e8c397
+spec:
+  templates:
+    - name: network
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      steps:
+        - - name: install-chaos-faults
+            template: install-chaos-faults
+            arguments: {}
+        - - name: pod-network-corruption-u5l
+            template: pod-network-corruption-u5l
+            arguments: {}
+        - - name: pod-network-loss-8pr
+            template: pod-network-loss-8pr
+            arguments: {}
+        - - name: pod-network-latency-07l
+            template: pod-network-latency-07l
+            arguments: {}
+        - - name: cleanup-chaos-resources
+            template: cleanup-chaos-resources
+            arguments: {}
+    - name: install-chaos-faults
+      inputs:
+        artifacts:
+          - name: pod-network-corruption-u5l
+            path: /tmp/pod-network-corruption-u5l.yaml
+            raw:
+              data: |
+                apiVersion: litmuschaos.io/v1alpha1
+                description:
+                  message: |
+                    Inject network packet corruption into application pod
+                kind: ChaosExperiment
+                metadata:
+                  name: pod-network-corruption
+                  labels:
+                    name: pod-network-corruption
+                    app.kubernetes.io/part-of: litmus
+                    app.kubernetes.io/component: chaosexperiment
+                    app.kubernetes.io/version: 3.1.0
+                spec:
+                  definition:
+                    scope: Namespaced
+                    permissions:
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods
+                        verbs:
+                          - create
+                          - delete
+                          - get
+                          - list
+                          - patch
+                          - update
+                          - deletecollection
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - events
+                        verbs:
+                          - create
+                          - get
+                          - list
+                          - patch
+                          - update
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - configmaps
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/log
+                        verbs:
+                          - get
+                          - list
+                          - watch
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/exec
+                        verbs:
+                          - get
+                          - list
+                          - create
+                      - apiGroups:
+                          - apps
+                        resources:
+                          - deployments
+                          - statefulsets
+                          - replicasets
+                          - daemonsets
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - apps.openshift.io
+                        resources:
+                          - deploymentconfigs
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - replicationcontrollers
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - argoproj.io
+                        resources:
+                          - rollouts
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - batch
+                        resources:
+                          - jobs
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - delete
+                          - deletecollection
+                      - apiGroups:
+                          - litmuschaos.io
+                        resources:
+                          - chaosengines
+                          - chaosexperiments
+                          - chaosresults
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - patch
+                          - update
+                          - delete
+                    image: litmuschaos/go-runner:3.1.0
+                    imagePullPolicy: Always
+                    args:
+                      - -c
+                      - ./experiments -name pod-network-corruption
+                    command:
+                      - /bin/bash
+                    env:
+                      - name: TARGET_CONTAINER
+                        value: ""
+                      - name: LIB_IMAGE
+                        value: litmuschaos/go-runner:3.1.0
+                      - name: NETWORK_INTERFACE
+                        value: eth0
+                      - name: TC_IMAGE
+                        value: gaiadocker/iproute2
+                      - name: NETWORK_PACKET_CORRUPTION_PERCENTAGE
+                        value: "100"
+                      - name: TOTAL_CHAOS_DURATION
+                        value: "60"
+                      - name: RAMP_TIME
+                        value: ""
+                      - name: PODS_AFFECTED_PERC
+                        value: ""
+                      - name: TARGET_PODS
+                        value: ""
+                      - name: NODE_LABEL
+                        value: ""
+                      - name: CONTAINER_RUNTIME
+                        value: containerd
+                      - name: DESTINATION_IPS
+                        value: ""
+                      - name: DESTINATION_HOSTS
+                        value: ""
+                      - name: SOCKET_PATH
+                        value: /run/containerd/containerd.sock
+                      - name: DEFAULT_HEALTH_CHECK
+                        value: "false"
+                      - name: SEQUENCE
+                        value: parallel
+                    labels:
+                      name: pod-network-corruption
+                      app.kubernetes.io/part-of: litmus
+                      app.kubernetes.io/component: experiment-job
+                      app.kubernetes.io/runtime-api-usage: "true"
+                      app.kubernetes.io/version: 3.1.0
+          - name: pod-network-loss-8pr
+            path: /tmp/pod-network-loss-8pr.yaml
+            raw:
+              data: >
+                apiVersion: litmuschaos.io/v1alpha1
+
+                description:
+                  message: |
+                    Injects network packet loss on pods belonging to an app deployment
+                kind: ChaosExperiment
+
+                metadata:
+                  name: pod-network-loss
+                  labels:
+                    name: pod-network-loss
+                    app.kubernetes.io/part-of: litmus
+                    app.kubernetes.io/component: chaosexperiment
+                    app.kubernetes.io/version: 3.1.0
+                spec:
+                  definition:
+                    scope: Namespaced
+                    permissions:
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods
+                        verbs:
+                          - create
+                          - delete
+                          - get
+                          - list
+                          - patch
+                          - update
+                          - deletecollection
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - events
+                        verbs:
+                          - create
+                          - get
+                          - list
+                          - patch
+                          - update
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - configmaps
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/log
+                        verbs:
+                          - get
+                          - list
+                          - watch
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/exec
+                        verbs:
+                          - get
+                          - list
+                          - create
+                      - apiGroups:
+                          - apps
+                        resources:
+                          - deployments
+                          - statefulsets
+                          - replicasets
+                          - daemonsets
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - apps.openshift.io
+                        resources:
+                          - deploymentconfigs
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - replicationcontrollers
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - argoproj.io
+                        resources:
+                          - rollouts
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - batch
+                        resources:
+                          - jobs
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - delete
+                          - deletecollection
+                      - apiGroups:
+                          - litmuschaos.io
+                        resources:
+                          - chaosengines
+                          - chaosexperiments
+                          - chaosresults
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - patch
+                          - update
+                          - delete
+                    image: litmuschaos/go-runner:3.1.0
+                    imagePullPolicy: Always
+                    args:
+                      - -c
+                      - ./experiments -name pod-network-loss
+                    command:
+                      - /bin/bash
+                    env:
+                      - name: TARGET_CONTAINER
+                        value: ""
+                      - name: LIB_IMAGE
+                        value: litmuschaos/go-runner:3.1.0
+                      - name: NETWORK_INTERFACE
+                        value: eth0
+                      - name: TC_IMAGE
+                        value: gaiadocker/iproute2
+                      - name: NETWORK_PACKET_LOSS_PERCENTAGE
+                        value: "100"
+                      - name: TOTAL_CHAOS_DURATION
+                        value: "60"
+                      - name: RAMP_TIME
+                        value: ""
+                      - name: PODS_AFFECTED_PERC
+                        value: ""
+                      - name: DEFAULT_HEALTH_CHECK
+                        value: "false"
+                      - name: TARGET_PODS
+                        value: ""
+                      - name: NODE_LABEL
+                        value: ""
+                      - name: CONTAINER_RUNTIME
+                        value: containerd
+                      - name: DESTINATION_IPS
+                        value: ""
+                      - name: DESTINATION_HOSTS
+                        value: ""
+                      - name: SOCKET_PATH
+                        value: /run/containerd/containerd.sock
+                      - name: SEQUENCE
+                        value: parallel
+                    labels:
+                      name: pod-network-loss
+                      app.kubernetes.io/part-of: litmus
+                      app.kubernetes.io/component: experiment-job
+                      app.kubernetes.io/runtime-api-usage: "true"
+                      app.kubernetes.io/version: 3.1.0
+          - name: pod-network-latency-07l
+            path: /tmp/pod-network-latency-07l.yaml
+            raw:
+              data: >
+                apiVersion: litmuschaos.io/v1alpha1
+
+                description:
+                  message: |
+                    Injects network latency on pods belonging to an app deployment
+                kind: ChaosExperiment
+
+                metadata:
+                  name: pod-network-latency
+                  labels:
+                    name: pod-network-latency
+                    app.kubernetes.io/part-of: litmus
+                    app.kubernetes.io/component: chaosexperiment
+                    app.kubernetes.io/version: 3.1.0
+                spec:
+                  definition:
+                    scope: Namespaced
+                    permissions:
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods
+                        verbs:
+                          - create
+                          - delete
+                          - get
+                          - list
+                          - patch
+                          - update
+                          - deletecollection
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - events
+                        verbs:
+                          - create
+                          - get
+                          - list
+                          - patch
+                          - update
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - configmaps
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/log
+                        verbs:
+                          - get
+                          - list
+                          - watch
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/exec
+                        verbs:
+                          - get
+                          - list
+                          - create
+                      - apiGroups:
+                          - apps
+                        resources:
+                          - deployments
+                          - statefulsets
+                          - replicasets
+                          - daemonsets
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - apps.openshift.io
+                        resources:
+                          - deploymentconfigs
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - replicationcontrollers
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - argoproj.io
+                        resources:
+                          - rollouts
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - batch
+                        resources:
+                          - jobs
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - delete
+                          - deletecollection
+                      - apiGroups:
+                          - litmuschaos.io
+                        resources:
+                          - chaosengines
+                          - chaosexperiments
+                          - chaosresults
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - patch
+                          - update
+                          - delete
+                    image: litmuschaos/go-runner:3.1.0
+                    imagePullPolicy: Always
+                    args:
+                      - -c
+                      - ./experiments -name pod-network-latency
+                    command:
+                      - /bin/bash
+                    env:
+                      - name: TARGET_CONTAINER
+                        value: ""
+                      - name: NETWORK_INTERFACE
+                        value: eth0
+                      - name: LIB_IMAGE
+                        value: litmuschaos/go-runner:3.1.0
+                      - name: TC_IMAGE
+                        value: gaiadocker/iproute2
+                      - name: NETWORK_LATENCY
+                        value: "2000"
+                      - name: TOTAL_CHAOS_DURATION
+                        value: "60"
+                      - name: RAMP_TIME
+                        value: ""
+                      - name: JITTER
+                        value: "0"
+                      - name: PODS_AFFECTED_PERC
+                        value: ""
+                      - name: TARGET_PODS
+                        value: ""
+                      - name: CONTAINER_RUNTIME
+                        value: containerd
+                      - name: DEFAULT_HEALTH_CHECK
+                        value: "false"
+                      - name: DESTINATION_IPS
+                        value: ""
+                      - name: DESTINATION_HOSTS
+                        value: ""
+                      - name: SOCKET_PATH
+                        value: /run/containerd/containerd.sock
+                      - name: NODE_LABEL
+                        value: ""
+                      - name: SEQUENCE
+                        value: parallel
+                    labels:
+                      name: pod-network-latency
+                      app.kubernetes.io/part-of: litmus
+                      app.kubernetes.io/component: experiment-job
+                      app.kubernetes.io/runtime-api-usage: "true"
+                      app.kubernetes.io/version: 3.1.0
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl apply -f /tmp/ -n {{workflow.parameters.adminModeNamespace}}
+            && sleep 30
+        resources: {}
+    - name: cleanup-chaos-resources
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl delete chaosengine -l workflow_run_id={{workflow.uid}} -n
+            {{workflow.parameters.adminModeNamespace}}
+        resources: {}
+    - name: pod-network-corruption-u5l
+      inputs:
+        artifacts:
+          - name: pod-network-corruption-u5l
+            path: /tmp/chaosengine-pod-network-corruption-u5l.yaml
+            raw:
+              data: |
+                apiVersion: litmuschaos.io/v1alpha1
+                kind: ChaosEngine
+                metadata:
+                  namespace: "{{workflow.parameters.adminModeNamespace}}"
+                  labels:
+                    workflow_run_id: "{{ workflow.uid }}"
+                    workflow_name: network
+                  annotations:
+                    probeRef: '[{"name":"cmdProbe","mode":"Continuous"}]'
+                  generateName: pod-network-corruption-u5l
+                spec:
+                  engineState: active
+                  appinfo:
+                    appns: trainticket
+                    applabel: service=ts-ticketinfo-service
+                    appkind: deployment
+                  chaosServiceAccount: litmus-admin
+                  experiments:
+                    - name: pod-network-corruption
+                      spec:
+                        components:
+                          env:
+                            - name: TARGET_CONTAINER
+                              value: ""
+                            - name: LIB_IMAGE
+                              value: litmuschaos/go-runner:3.1.0
+                            - name: NETWORK_INTERFACE
+                              value: eth0
+                            - name: TC_IMAGE
+                              value: gaiadocker/iproute2
+                            - name: NETWORK_PACKET_CORRUPTION_PERCENTAGE
+                              value: "70"
+                            - name: TOTAL_CHAOS_DURATION
+                              value: "120"
+                            - name: RAMP_TIME
+                              value: ""
+                            - name: PODS_AFFECTED_PERC
+                              value: ""
+                            - name: TARGET_PODS
+                              value: ""
+                            - name: NODE_LABEL
+                              value: ""
+                            - name: CONTAINER_RUNTIME
+                              value: containerd
+                            - name: DESTINATION_IPS
+                              value: ""
+                            - name: DESTINATION_HOSTS
+                              value: ""
+                            - name: SOCKET_PATH
+                              value: /run/containerd/containerd.sock
+                            - name: DEFAULT_HEALTH_CHECK
+                              value: "false"
+                            - name: SEQUENCE
+                              value: parallel
+      outputs: {}
+      metadata:
+        labels:
+          weight: "10"
+      container:
+        name: ""
+        image: docker.io/litmuschaos/litmus-checker:2.11.0
+        args:
+          - -file=/tmp/chaosengine-pod-network-corruption-u5l.yaml
+          - -saveName=/tmp/engine-name
+        resources: {}
+    - name: pod-network-loss-8pr
+      inputs:
+        artifacts:
+          - name: pod-network-loss-8pr
+            path: /tmp/chaosengine-pod-network-loss-8pr.yaml
+            raw:
+              data: |
+                apiVersion: litmuschaos.io/v1alpha1
+                kind: ChaosEngine
+                metadata:
+                  namespace: "{{workflow.parameters.adminModeNamespace}}"
+                  labels:
+                    workflow_run_id: "{{ workflow.uid }}"
+                    workflow_name: network
+                  annotations:
+                    probeRef: '[{"name":"cmdProbe","mode":"Continuous"}]'
+                  generateName: pod-network-loss-8pr
+                spec:
+                  engineState: active
+                  appinfo:
+                    appns: trainticket
+                    applabel: service=ts-ticketinfo-service
+                    appkind: deployment
+                  chaosServiceAccount: litmus-admin
+                  experiments:
+                    - name: pod-network-loss
+                      spec:
+                        components:
+                          env:
+                            - name: TARGET_CONTAINER
+                              value: ""
+                            - name: LIB_IMAGE
+                              value: litmuschaos/go-runner:3.1.0
+                            - name: NETWORK_INTERFACE
+                              value: eth0
+                            - name: TC_IMAGE
+                              value: gaiadocker/iproute2
+                            - name: NETWORK_PACKET_LOSS_PERCENTAGE
+                              value: "100"
+                            - name: TOTAL_CHAOS_DURATION
+                              value: "120"
+                            - name: RAMP_TIME
+                              value: ""
+                            - name: PODS_AFFECTED_PERC
+                              value: ""
+                            - name: DEFAULT_HEALTH_CHECK
+                              value: "false"
+                            - name: TARGET_PODS
+                              value: ""
+                            - name: NODE_LABEL
+                              value: ""
+                            - name: CONTAINER_RUNTIME
+                              value: containerd
+                            - name: DESTINATION_IPS
+                              value: ""
+                            - name: DESTINATION_HOSTS
+                              value: ""
+                            - name: SOCKET_PATH
+                              value: /run/containerd/containerd.sock
+                            - name: SEQUENCE
+                              value: parallel
+      outputs: {}
+      metadata:
+        labels:
+          weight: "10"
+      container:
+        name: ""
+        image: docker.io/litmuschaos/litmus-checker:2.11.0
+        args:
+          - -file=/tmp/chaosengine-pod-network-loss-8pr.yaml
+          - -saveName=/tmp/engine-name
+        resources: {}
+    - name: pod-network-latency-07l
+      inputs:
+        artifacts:
+          - name: pod-network-latency-07l
+            path: /tmp/chaosengine-pod-network-latency-07l.yaml
+            raw:
+              data: |
+                apiVersion: litmuschaos.io/v1alpha1
+                kind: ChaosEngine
+                metadata:
+                  namespace: "{{workflow.parameters.adminModeNamespace}}"
+                  labels:
+                    workflow_run_id: "{{ workflow.uid }}"
+                    workflow_name: network
+                  annotations:
+                    probeRef: '[{"name":"cmdProbe","mode":"Continuous"}]'
+                  generateName: pod-network-latency-07l
+                spec:
+                  engineState: active
+                  appinfo:
+                    appns: trainticket
+                    applabel: service=ts-ticketinfo-service
+                    appkind: deployment
+                  chaosServiceAccount: litmus-admin
+                  experiments:
+                    - name: pod-network-latency
+                      spec:
+                        components:
+                          env:
+                            - name: TARGET_CONTAINER
+                              value: ""
+                            - name: NETWORK_INTERFACE
+                              value: eth0
+                            - name: LIB_IMAGE
+                              value: litmuschaos/go-runner:3.1.0
+                            - name: TC_IMAGE
+                              value: gaiadocker/iproute2
+                            - name: NETWORK_LATENCY
+                              value: "1000"
+                            - name: TOTAL_CHAOS_DURATION
+                              value: "120"
+                            - name: RAMP_TIME
+                              value: ""
+                            - name: JITTER
+                              value: "0"
+                            - name: PODS_AFFECTED_PERC
+                              value: ""
+                            - name: TARGET_PODS
+                              value: ""
+                            - name: CONTAINER_RUNTIME
+                              value: containerd
+                            - name: DEFAULT_HEALTH_CHECK
+                              value: "false"
+                            - name: DESTINATION_IPS
+                              value: ""
+                            - name: DESTINATION_HOSTS
+                              value: ""
+                            - name: SOCKET_PATH
+                              value: /run/containerd/containerd.sock
+                            - name: NODE_LABEL
+                              value: ""
+                            - name: SEQUENCE
+                              value: parallel
+      outputs: {}
+      metadata:
+        labels:
+          weight: "10"
+      container:
+        name: ""
+        image: docker.io/litmuschaos/litmus-checker:2.11.0
+        args:
+          - -file=/tmp/chaosengine-pod-network-latency-07l.yaml
+          - -saveName=/tmp/engine-name
+        resources: {}
+  entrypoint: network
+  arguments:
+    parameters:
+      - name: adminModeNamespace
+        value: litmus
+  serviceAccountName: argo-chaos
+  podGC:
+    strategy: OnWorkflowCompletion
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+status:
+  startedAt: null
+  finishedAt: null

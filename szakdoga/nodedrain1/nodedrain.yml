@@ -1,0 +1,245 @@
+kind: Workflow
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: nodedrain
+  namespace: litmus
+  creationTimestamp: null
+  labels:
+    infra_id: bab68d38-862f-463a-9156-ec5df4127e52
+    revision_id: 22dcdf02-091a-499f-b074-a5143c0976fa
+    workflow_id: 9855f503-3a7a-40d4-99ec-1c8baac8a35a
+    workflows.argoproj.io/controller-instanceid: bab68d38-862f-463a-9156-ec5df4127e52
+spec:
+  templates:
+    - name: nodedrain
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      steps:
+        - - name: install-chaos-faults
+            template: install-chaos-faults
+            arguments: {}
+        - - name: node-drain-hc9
+            template: node-drain-hc9
+            arguments: {}
+        - - name: cleanup-chaos-resources
+            template: cleanup-chaos-resources
+            arguments: {}
+    - name: install-chaos-faults
+      inputs:
+        artifacts:
+          - name: node-drain-hc9
+            path: /tmp/node-drain-hc9.yaml
+            raw:
+              data: |
+                apiVersion: litmuschaos.io/v1alpha1
+                description:
+                  message: |
+                    Drain the node where application pod is scheduled
+                kind: ChaosExperiment
+                metadata:
+                  name: node-drain
+                  labels:
+                    name: node-drain
+                    app.kubernetes.io/part-of: litmus
+                    app.kubernetes.io/component: chaosexperiment
+                    app.kubernetes.io/version: 3.1.0
+                spec:
+                  definition:
+                    scope: Cluster
+                    permissions:
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods
+                        verbs:
+                          - create
+                          - delete
+                          - get
+                          - list
+                          - patch
+                          - update
+                          - deletecollection
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - events
+                        verbs:
+                          - create
+                          - get
+                          - list
+                          - patch
+                          - update
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - configmaps
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/log
+                        verbs:
+                          - get
+                          - list
+                          - watch
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/exec
+                          - pods/eviction
+                        verbs:
+                          - get
+                          - list
+                          - create
+                      - apiGroups:
+                          - apps
+                        resources:
+                          - daemonsets
+                        verbs:
+                          - list
+                          - get
+                          - delete
+                      - apiGroups:
+                          - batch
+                        resources:
+                          - jobs
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - delete
+                          - deletecollection
+                      - apiGroups:
+                          - litmuschaos.io
+                        resources:
+                          - chaosengines
+                          - chaosexperiments
+                          - chaosresults
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - patch
+                          - update
+                          - delete
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - nodes
+                        verbs:
+                          - get
+                          - list
+                          - patch
+                    image: litmuschaos/go-runner:3.1.0
+                    imagePullPolicy: Always
+                    args:
+                      - -c
+                      - ./experiments -name node-drain
+                    command:
+                      - /bin/bash
+                    env:
+                      - name: TARGET_NODE
+                        value: ""
+                      - name: NODE_LABEL
+                        value: ""
+                      - name: TOTAL_CHAOS_DURATION
+                        value: "60"
+                      - name: RAMP_TIME
+                        value: ""
+                      - name: DEFAULT_HEALTH_CHECK
+                        value: "false"
+                    labels:
+                      name: node-drain
+                      app.kubernetes.io/part-of: litmus
+                      app.kubernetes.io/component: experiment-job
+                      app.kubernetes.io/version: 3.1.0
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl apply -f /tmp/ -n {{workflow.parameters.adminModeNamespace}}
+            && sleep 30
+        resources: {}
+    - name: cleanup-chaos-resources
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl delete chaosengine -l workflow_run_id={{workflow.uid}} -n
+            {{workflow.parameters.adminModeNamespace}}
+        resources: {}
+    - name: node-drain-hc9
+      inputs:
+        artifacts:
+          - name: node-drain-hc9
+            path: /tmp/chaosengine-node-drain-hc9.yaml
+            raw:
+              data: |
+                apiVersion: litmuschaos.io/v1alpha1
+                kind: ChaosEngine
+                metadata:
+                  namespace: "{{workflow.parameters.adminModeNamespace}}"
+                  labels:
+                    workflow_run_id: "{{ workflow.uid }}"
+                    workflow_name: nodedrain
+                  annotations:
+                    probeRef: '[{"name":"cmdProbe","mode":"Continuous"}]'
+                  generateName: node-drain-hc9
+                spec:
+                  engineState: active
+                  auxiliaryAppInfo: ""
+                  chaosServiceAccount: litmus-admin
+                  experiments:
+                    - name: node-drain
+                      spec:
+                        components:
+                          env:
+                            - name: TARGET_NODE
+                              value: ip-192-168-147-191.ec2.internal
+                            - name: NODE_LABEL
+                              value: ""
+                            - name: TOTAL_CHAOS_DURATION
+                              value: "120"
+                            - name: RAMP_TIME
+                              value: 10s
+                            - name: DEFAULT_HEALTH_CHECK
+                              value: "false"
+      outputs: {}
+      metadata:
+        labels:
+          weight: "10"
+      container:
+        name: ""
+        image: docker.io/litmuschaos/litmus-checker:2.11.0
+        args:
+          - -file=/tmp/chaosengine-node-drain-hc9.yaml
+          - -saveName=/tmp/engine-name
+        resources: {}
+  entrypoint: nodedrain
+  arguments:
+    parameters:
+      - name: adminModeNamespace
+        value: litmus
+  serviceAccountName: argo-chaos
+  podGC:
+    strategy: OnWorkflowCompletion
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+status:
+  startedAt: null
+  finishedAt: null

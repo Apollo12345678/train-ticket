@@ -1,0 +1,257 @@
+kind: Workflow
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: nodechaos
+  namespace: litmus
+  creationTimestamp: null
+  labels:
+    infra_id: c4056a15-57b8-4039-b582-f0b8fb4f39c4
+    revision_id: 98e135a9-2f11-46f4-8d44-a62ecbd202a1
+    workflow_id: d3a93f29-fdcf-4159-857b-704293753b9a
+    workflows.argoproj.io/controller-instanceid: c4056a15-57b8-4039-b582-f0b8fb4f39c4
+spec:
+  templates:
+    - name: nodechaos
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      steps:
+        - - name: install-chaos-faults
+            template: install-chaos-faults
+            arguments: {}
+        - - name: node-poweroff-hia
+            template: node-poweroff-hia
+            arguments: {}
+        - - name: cleanup-chaos-resources
+            template: cleanup-chaos-resources
+            arguments: {}
+    - name: install-chaos-faults
+      inputs:
+        artifacts:
+          - name: node-poweroff-hia
+            path: /tmp/node-poweroff-hia.yaml
+            raw:
+              data: >
+                apiVersion: litmuschaos.io/v1alpha1
+
+                description:
+                  message: |
+                    Poweroff a node in the cluster
+                kind: ChaosExperiment
+
+                metadata:
+                  name: node-poweroff
+                  labels:
+                    name: node-poweroff
+                    app.kubernetes.io/part-of: litmus
+                    app.kubernetes.io/component: chaosexperiment
+                    app.kubernetes.io/version: 3.1.0
+                spec:
+                  definition:
+                    scope: Cluster
+                    permissions:
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods
+                        verbs:
+                          - create
+                          - delete
+                          - get
+                          - list
+                          - patch
+                          - update
+                          - deletecollection
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - events
+                        verbs:
+                          - create
+                          - get
+                          - list
+                          - patch
+                          - update
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - configmaps
+                          - secrets
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/log
+                        verbs:
+                          - get
+                          - list
+                          - watch
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/exec
+                        verbs:
+                          - get
+                          - list
+                          - create
+                      - apiGroups:
+                          - batch
+                        resources:
+                          - jobs
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - delete
+                          - deletecollection
+                      - apiGroups:
+                          - litmuschaos.io
+                        resources:
+                          - chaosengines
+                          - chaosexperiments
+                          - chaosresults
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - patch
+                          - update
+                          - delete
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - nodes
+                        verbs:
+                          - get
+                          - list
+                    image: litmuschaos/go-runner:3.1.0
+                    imagePullPolicy: Always
+                    args:
+                      - -c
+                      - ./experiments -name node-restart
+                    command:
+                      - /bin/bash
+                    env:
+                      - name: SSH_USER
+                        value: root
+                      - name: TOTAL_CHAOS_DURATION
+                        value: "60"
+                      - name: REBOOT_COMMAND
+                        value: -o ServerAliveInterval=1 -o ServerAliveCountMax=1 "sudo systemctl
+                          poweroff --force --force" ; true
+                      - name: RAMP_TIME
+                        value: ""
+                      - name: LIB_IMAGE
+                        value: litmuschaos/go-runner:3.1.0
+                      - name: TARGET_NODE
+                        value: ""
+                      - name: NODE_LABEL
+                        value: ""
+                      - name: TARGET_NODE_IP
+                        value: ""
+                    labels:
+                      name: node-poweroff
+                      app.kubernetes.io/part-of: litmus
+                      app.kubernetes.io/component: experiment-job
+                      app.kubernetes.io/version: 3.1.0
+                    secrets:
+                      - name: id-rsa
+                        mountPath: /mnt/
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl apply -f /tmp/ -n {{workflow.parameters.adminModeNamespace}}
+            && sleep 30
+        resources: {}
+    - name: cleanup-chaos-resources
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl delete chaosengine -l workflow_run_id={{workflow.uid}} -n
+            {{workflow.parameters.adminModeNamespace}}
+        resources: {}
+    - name: node-poweroff-hia
+      inputs:
+        artifacts:
+          - name: node-poweroff-hia
+            path: /tmp/chaosengine-node-poweroff-hia.yaml
+            raw:
+              data: >
+                apiVersion: litmuschaos.io/v1alpha1
+
+                kind: ChaosEngine
+
+                metadata:
+                  namespace: "{{workflow.parameters.adminModeNamespace}}"
+                  labels:
+                    workflow_run_id: "{{ workflow.uid }}"
+                    workflow_name: nodechaos
+                  annotations:
+                    probeRef: '[{"name":"cmdProbe","mode":"Continuous"}]'
+                  generateName: node-poweroff-hia
+                spec:
+                  engineState: active
+                  auxiliaryAppInfo: ""
+                  chaosServiceAccount: litmus-admin
+                  experiments:
+                    - name: node-poweroff
+                      spec:
+                        components:
+                          env:
+                            - name: SSH_USER
+                              value: ec2-user
+                            - name: TOTAL_CHAOS_DURATION
+                              value: "120"
+                            - name: REBOOT_COMMAND
+                              value: -o ServerAliveInterval=1 -o ServerAliveCountMax=1 "sudo systemctl
+                                poweroff --force --force" ; true
+                            - name: RAMP_TIME
+                              value: ""
+                            - name: LIB_IMAGE
+                              value: litmuschaos/go-runner:3.1.0
+                            - name: TARGET_NODE
+                              value: ip-192-168-16-26.ec2.internal
+                            - name: NODE_LABEL
+                              value: ""
+                            - name: TARGET_NODE_IP
+                              value: ""
+      outputs: {}
+      metadata:
+        labels:
+          weight: "10"
+      container:
+        name: ""
+        image: docker.io/litmuschaos/litmus-checker:2.11.0
+        args:
+          - -file=/tmp/chaosengine-node-poweroff-hia.yaml
+          - -saveName=/tmp/engine-name
+        resources: {}
+  entrypoint: nodechaos
+  arguments:
+    parameters:
+      - name: adminModeNamespace
+        value: litmus
+  serviceAccountName: argo-chaos
+  podGC:
+    strategy: OnWorkflowCompletion
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+status:
+  startedAt: null
+  finishedAt: null

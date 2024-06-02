@@ -1,0 +1,326 @@
+kind: Workflow
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: http
+  namespace: litmus
+  creationTimestamp: null
+  labels:
+    infra_id: e50c7ec1-1041-4d26-be44-26b65de1a4a9
+    revision_id: f72206d2-6c49-476d-a6a9-469842aad891
+    workflow_id: 2a7fc1e8-5820-4619-aa8b-6091ec04c962
+    workflows.argoproj.io/controller-instanceid: e50c7ec1-1041-4d26-be44-26b65de1a4a9
+spec:
+  templates:
+    - name: http
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      steps:
+        - - name: install-chaos-faults
+            template: install-chaos-faults
+            arguments: {}
+        - - name: pod-http-status-code-9ih
+            template: pod-http-status-code-9ih
+            arguments: {}
+        - - name: cleanup-chaos-resources
+            template: cleanup-chaos-resources
+            arguments: {}
+    - name: install-chaos-faults
+      inputs:
+        artifacts:
+          - name: pod-http-status-code-9ih
+            path: /tmp/pod-http-status-code-9ih.yaml
+            raw:
+              data: >
+                apiVersion: litmuschaos.io/v1alpha1
+
+                description:
+                  message: >
+                    It injects chaos inside the pod which modifies the status code of the
+                    response from the provided application server to desired status code
+                    provided by the user and reverts after a specified duration
+                kind: ChaosExperiment
+
+                metadata:
+                  name: pod-http-status-code
+                  labels:
+                    name: pod-http-status-code
+                    app.kubernetes.io/part-of: litmus
+                    app.kubernetes.io/component: chaosexperiment
+                    app.kubernetes.io/version: 3.1.0
+                spec:
+                  definition:
+                    scope: Namespaced
+                    permissions:
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods
+                        verbs:
+                          - create
+                          - delete
+                          - get
+                          - list
+                          - patch
+                          - update
+                          - deletecollection
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - events
+                        verbs:
+                          - create
+                          - get
+                          - list
+                          - patch
+                          - update
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - configmaps
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/log
+                        verbs:
+                          - get
+                          - list
+                          - watch
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - pods/exec
+                        verbs:
+                          - get
+                          - list
+                          - create
+                      - apiGroups:
+                          - apps
+                        resources:
+                          - deployments
+                          - statefulsets
+                          - replicasets
+                          - daemonsets
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - apps.openshift.io
+                        resources:
+                          - deploymentconfigs
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - ""
+                        resources:
+                          - replicationcontrollers
+                        verbs:
+                          - get
+                          - list
+                      - apiGroups:
+                          - argoproj.io
+                        resources:
+                          - rollouts
+                        verbs:
+                          - list
+                          - get
+                      - apiGroups:
+                          - batch
+                        resources:
+                          - jobs
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - delete
+                          - deletecollection
+                      - apiGroups:
+                          - litmuschaos.io
+                        resources:
+                          - chaosengines
+                          - chaosexperiments
+                          - chaosresults
+                        verbs:
+                          - create
+                          - list
+                          - get
+                          - patch
+                          - update
+                          - delete
+                    image: litmuschaos/go-runner:3.1.0
+                    imagePullPolicy: Always
+                    args:
+                      - -c
+                      - ./experiments -name pod-http-status-code
+                    command:
+                      - /bin/bash
+                    env:
+                      - name: TARGET_CONTAINER
+                        value: ""
+                      - name: LIB_IMAGE
+                        value: litmuschaos/go-runner:3.1.0
+                      - name: STATUS_CODE
+                        value: ""
+                      - name: MODIFY_RESPONSE_BODY
+                        value: "true"
+                      - name: RESPONSE_BODY
+                        value: ""
+                      - name: CONTENT_ENCODING
+                        value: ""
+                      - name: CONTENT_TYPE
+                        value: text/plain
+                      - name: TARGET_SERVICE_PORT
+                        value: "80"
+                      - name: TOXICITY
+                        value: "100"
+                      - name: PROXY_PORT
+                        value: "20000"
+                      - name: NETWORK_INTERFACE
+                        value: eth0
+                      - name: TOTAL_CHAOS_DURATION
+                        value: "60"
+                      - name: RAMP_TIME
+                        value: ""
+                      - name: DEFAULT_HEALTH_CHECK
+                        value: "false"
+                      - name: PODS_AFFECTED_PERC
+                        value: ""
+                      - name: TARGET_PODS
+                        value: ""
+                      - name: CONTAINER_RUNTIME
+                        value: containerd
+                      - name: SOCKET_PATH
+                        value: /run/containerd/containerd.sock
+                      - name: NODE_LABEL
+                        value: ""
+                      - name: SEQUENCE
+                        value: parallel
+                    labels:
+                      name: pod-http-status-code
+                      app.kubernetes.io/part-of: litmus
+                      app.kubernetes.io/component: experiment-job
+                      app.kubernetes.io/version: 3.1.0
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl apply -f /tmp/ -n {{workflow.parameters.adminModeNamespace}}
+            && sleep 30
+        resources: {}
+    - name: cleanup-chaos-resources
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      container:
+        name: ""
+        image: litmuschaos/k8s:2.11.0
+        command:
+          - sh
+          - -c
+        args:
+          - kubectl delete chaosengine -l workflow_run_id={{workflow.uid}} -n
+            {{workflow.parameters.adminModeNamespace}}
+        resources: {}
+    - name: pod-http-status-code-9ih
+      inputs:
+        artifacts:
+          - name: pod-http-status-code-9ih
+            path: /tmp/chaosengine-pod-http-status-code-9ih.yaml
+            raw:
+              data: |
+                apiVersion: litmuschaos.io/v1alpha1
+                kind: ChaosEngine
+                metadata:
+                  namespace: "{{workflow.parameters.adminModeNamespace}}"
+                  labels:
+                    workflow_run_id: "{{ workflow.uid }}"
+                    workflow_name: http
+                  annotations:
+                    probeRef: '[{"name":"cmdProbe","mode":"Continuous"}]'
+                  generateName: pod-http-status-code-9ih
+                spec:
+                  engineState: active
+                  appinfo:
+                    appns: trainticket
+                    applabel: service=ts-price-service
+                    appkind: deployment
+                  chaosServiceAccount: litmus-admin
+                  experiments:
+                    - name: pod-http-status-code
+                      spec:
+                        components:
+                          env:
+                            - name: TARGET_CONTAINER
+                              value: ""
+                            - name: LIB_IMAGE
+                              value: litmuschaos/go-runner:3.1.0
+                            - name: STATUS_CODE
+                              value: "500"
+                            - name: MODIFY_RESPONSE_BODY
+                              value: "false"
+                            - name: RESPONSE_BODY
+                              value: ""
+                            - name: CONTENT_ENCODING
+                              value: ""
+                            - name: CONTENT_TYPE
+                              value: application/json
+                            - name: TARGET_SERVICE_PORT
+                              value: "16579"
+                            - name: TOXICITY
+                              value: "100"
+                            - name: PROXY_PORT
+                              value: "20000"
+                            - name: NETWORK_INTERFACE
+                              value: eth0
+                            - name: TOTAL_CHAOS_DURATION
+                              value: "120"
+                            - name: RAMP_TIME
+                              value: ""
+                            - name: DEFAULT_HEALTH_CHECK
+                              value: "false"
+                            - name: PODS_AFFECTED_PERC
+                              value: ""
+                            - name: TARGET_PODS
+                              value: ""
+                            - name: CONTAINER_RUNTIME
+                              value: containerd
+                            - name: SOCKET_PATH
+                              value: /run/containerd/containerd.sock
+                            - name: NODE_LABEL
+                              value: ""
+                            - name: SEQUENCE
+                              value: parallel
+      outputs: {}
+      metadata:
+        labels:
+          weight: "10"
+      container:
+        name: ""
+        image: docker.io/litmuschaos/litmus-checker:2.11.0
+        args:
+          - -file=/tmp/chaosengine-pod-http-status-code-9ih.yaml
+          - -saveName=/tmp/engine-name
+        resources: {}
+  entrypoint: http
+  arguments:
+    parameters:
+      - name: adminModeNamespace
+        value: litmus
+  serviceAccountName: argo-chaos
+  podGC:
+    strategy: OnWorkflowCompletion
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+status:
+  startedAt: null
+  finishedAt: null
